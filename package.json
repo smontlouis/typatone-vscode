@@ -1,9 +1,13 @@
 {
   "name": "typatone-vscode",
-  "displayName": "Typatone vs-code",
+  "displayName": "Typatone (Keyboard sounds)",
   "description": "A Visual Studio Code extension that creates sweet melodies based on what you type. Inspired by typatone.com",
   "version": "1.0.0",
-  "publisher": "smontlouis",
+  "publisher": "smo",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/smontlouis/typatone-vscode.git"
+  },
   "author": {
     "name": "Stéphane Montlouis-Calixte"
   },

@@ -1,32 +1,27 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode'
-import { handleKey } from './handleKey'
+import * as Keyboard from './keyboard'
 import * as Rhythm from './rhythm'
 import * as Sound from './sound'
 
-let isActive: boolean
-
 export function activate(context: vscode.ExtensionContext) {
   console.log('Congratulations, your extension "typatone" is now active!')
-
-  // is the extension activated? yes by default.
-  isActive = context.globalState.get('typatone.isActive', true)
 
   let disposable: vscode.Disposable
 
   // Enable typatone
   disposable = vscode.commands.registerCommand(`typatone.enable`, async () => {
     context.globalState.update('typatone.isActive', true)
-    isActive = true
+    vscode.window.showInformationMessage('Typatone enabled')
   })
   context.subscriptions.push(disposable)
 
   // Disable typatone
   disposable = vscode.commands.registerCommand(`typatone.disable`, async () => {
     context.globalState.update('typatone.isActive', false)
-    isActive = false
     vscode.commands.executeCommand('typatone.stop')
+    vscode.window.showInformationMessage('Typatone disabled')
   })
   context.subscriptions.push(disposable)
 
@@ -40,9 +35,9 @@ export function activate(context: vscode.ExtensionContext) {
   // Handle keypress
   disposable = vscode.workspace.onDidChangeTextDocument(
     (event: vscode.TextDocumentChangeEvent) => {
-      if (!isActive) return
+      if (!context.globalState.get('typatone.isActive', true)) return
       const key = event.contentChanges[0].text
-      handleKey(key, context)
+      Keyboard.onPress(key)
     }
   )
   context.subscriptions.push(disposable)
@@ -100,8 +95,8 @@ export function activate(context: vscode.ExtensionContext) {
       )
 
       if (options) {
+        Rhythm.setSync(Boolean(options.find((o) => o.label === 'Tempo mode')))
         Rhythm.setLoop(Boolean(options.find((o) => o.label === 'Loop')))
-        Rhythm.setSync(Boolean(options.find((o) => o.label === 'Sync mode')))
 
         Rhythm.stop()
         Sound.stop()

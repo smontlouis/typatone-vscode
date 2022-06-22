@@ -2,10 +2,7 @@ import { ExtensionContext } from 'vscode'
 import symbolPattern from './patterns/all'
 import letterPattern from './patterns/freqTable'
 
-const _isWindows = process.platform === 'win32'
 const player = require('play-sound')()
-const cp = require('child_process')
-const path = require('path')
 
 let theme: Theme = 'natural'
 let playQueue: any[] = []
@@ -33,13 +30,7 @@ export const themes = [
 export type Theme = typeof themes[number]
 
 export const play = (sound: string, t: Theme = theme) => {
-  const _playerWindowsPath = path.join(__dirname, '..', 'audio', t, 'play.exe')
-
   const filePath = `${__dirname}/../audio/${t}/${sound}.mp3`
-
-  if (_isWindows) {
-    cp.execFile(_playerWindowsPath, [filePath])
-  }
 
   playQueue.push(
     player.play(filePath, (err: any) => {
