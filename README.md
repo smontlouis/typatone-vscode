@@ -6,14 +6,27 @@ A Visual Studio Code extension that creates sweet melodies based on what you typ
 
 Run `code --install-extension smo.typatone-vscode`
 
-or search [typatone](https://marketplace.visualstudio.com/items?itemName=typatone) in Extensions Marketplace.
+or search [typatone-vscode](https://marketplace.visualstudio.com/items?itemName=typatone) in Extensions Marketplace.
 
 ## How to use
 
-Typatone will start immediately when visual studio code is started. However, you can enable and disable the extension by executing these commands in the Command Palette (Cmd+Shift+P).
+Typatone will start immediately when vs code is started. However, you can enable and disable the extension by executing these commands in the Command Palette (Cmd+Shift+P).
 
 - `Typatone: Enable`
 - `Typatone: Disable`
+
+You can choose different themes by typing `Typatone: Choose theme`
+
+- Natural (default)
+- Beeps
+- Boards
+- Flutter
+- Spooky
+
+It's also possible to customize typatone-vscode experience in `Typatone: Settings`
+
+- Tempo mode: by default, typatone-vscode uses a predefined tempo for each theme, it is possible to deactivate the tempo and code in free mode
+- Loop: loop the sequence in tempo mode (max: 3 times)
 
 ---
 

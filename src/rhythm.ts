@@ -1,21 +1,43 @@
 import { ExtensionContext } from 'vscode'
-import { getSoundKey, Theme } from './utils'
-const _isWindows = process.platform === 'win32'
-const player = require('play-sound')()
-const cp = require('child_process')
-const path = require('path')
+import * as Sound from './sound'
 
 let queue: string[] = []
-let playing = false
-let timeout: NodeJS.Timeout | null
-let bpm = 240
-let index = -1
-let loop = false
-let context: ExtensionContext
-let theme: Theme = 'natural'
 
-export const setContext = (ctx: ExtensionContext) => (context = ctx)
-export const setTheme = (t: Theme) => (t = theme)
+let playing = false
+let sync = true
+let timeout: NodeJS.Timeout | null
+let index = -1
+let loop: boolean
+let loopIndex = 0
+let maxLoopTimes = 2
+
+let context: ExtensionContext
+
+const bpms = {
+  natural: 240,
+  beeps: 400,
+  boards: 40,
+  flutter: 80,
+  spooky: 100,
+}
+
+export const init = (ctx: ExtensionContext) => {
+  context = ctx
+  setLoop(context.globalState.get('typatone.loop', false))
+  setSync(context.globalState.get('typatone.sync', true))
+}
+
+export const setLoop = (l: boolean) => {
+  loop = l
+  context.globalState.update('typatone.loop', l)
+}
+export const isLooping = () => loop
+
+export const setSync = (s: boolean) => {
+  sync = s
+  context.globalState.update('typatone.sync', s)
+}
+export const isSync = () => sync
 
 export const addToQueue = (key: string) => queue.push(key)
 
@@ -38,40 +60,22 @@ export const stop = () => {
   queue = []
 }
 
-export const play = (sound: string, theme: Theme = 'natural') => {
-  const _playerWindowsPath = path.join(
-    __dirname,
-    '..',
-    'audio',
-    theme,
-    'play.exe'
-  )
-
-  const filePath = `${__dirname}/../audio/${theme}/${sound}.mp3`
-
-  if (_isWindows) {
-    cp.execFile(_playerWindowsPath, [filePath])
-  } else {
-    player.play(filePath, (err: any) => {
-      if (err) {
-        console.error(err)
-      }
-    })
-  }
-}
-
 const ping = () => {
   if (!playing) {
     return
   }
 
-  console.log('ping', Date.now())
-
   index += 1
-  if (index >= queue.length && !loop) {
+  if (index >= queue.length && (!loop || loopIndex >= maxLoopTimes)) {
+    loopIndex = 0
     stop()
     return
   }
+
+  if (index >= queue.length) {
+    loopIndex += 1
+  }
+
   update()
 
   timeout = setTimeout(ping, bpmToMillis())
@@ -80,10 +84,9 @@ const ping = () => {
 const update = () => {
   index = index % queue.length
   const key = queue[index]
-  const sound = getSoundKey(key)
-  const theme = context.globalState.get('typatone.theme', 'natural')
+  const sound = Sound.getSoundKey(key)
 
-  play(sound, theme)
+  Sound.play(sound)
 }
 
-const bpmToMillis = (v?: number) => 60000 / (v || bpm)
+const bpmToMillis = (v?: number) => 60000 / (v || bpms[Sound.getTheme()])

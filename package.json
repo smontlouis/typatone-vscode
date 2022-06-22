@@ -1,8 +1,8 @@
 {
-  "name": "typatone",
-  "displayName": "typatone",
+  "name": "typatone-vscode",
+  "displayName": "Typatone vs-code",
   "description": "A Visual Studio Code extension that creates sweet melodies based on what you type. Inspired by typatone.com",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "publisher": "smontlouis",
   "author": {
     "name": "Stéphane Montlouis-Calixte"
@@ -38,6 +38,14 @@
       {
         "command": "typatone.changeTheme",
         "title": "Typatone: Change theme"
+      },
+      {
+        "command": "typatone.stop",
+        "title": "Typatone: Stop all sounds"
+      },
+      {
+        "command": "typatone.settings",
+        "title": "Typatone: Settings"
       }
     ]
   },

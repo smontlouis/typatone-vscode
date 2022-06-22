@@ -2,9 +2,8 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode'
 import { handleKey } from './handleKey'
-import play from './play'
-import { Theme, themes } from './utils'
 import * as Rhythm from './rhythm'
+import * as Sound from './sound'
 
 let isActive: boolean
 
@@ -27,6 +26,14 @@ export function activate(context: vscode.ExtensionContext) {
   disposable = vscode.commands.registerCommand(`typatone.disable`, async () => {
     context.globalState.update('typatone.isActive', false)
     isActive = false
+    vscode.commands.executeCommand('typatone.stop')
+  })
+  context.subscriptions.push(disposable)
+
+  // Stop all sounds
+  disposable = vscode.commands.registerCommand(`typatone.stop`, async () => {
+    Rhythm.stop()
+    Sound.stop()
   })
   context.subscriptions.push(disposable)
 
@@ -45,20 +52,66 @@ export function activate(context: vscode.ExtensionContext) {
     `typatone.changeTheme`,
     async () => {
       const selectedTheme = await vscode.window.showQuickPick(
-        themes.map((label) => ({ label })),
+        Sound.themes.map((label) => ({
+          label,
+          picked: Sound.getTheme() === label,
+        })),
         {
           onDidSelectItem: (item: vscode.QuickPickItem) => {
-            play('0', item.label as Theme)
+            Sound.stop()
+            Sound.play('0', item.label as Sound.Theme)
           },
+          placeHolder: 'Select a theme',
         }
       )
 
-      context.globalState.update('typatone.theme', selectedTheme?.label)
+      Sound.stop()
+      console.log('selectedTheme', selectedTheme)
+      if (selectedTheme) {
+        Sound.setTheme(selectedTheme?.label as Sound.Theme)
+      }
     }
   )
   context.subscriptions.push(disposable)
 
-  Rhythm.setContext(context)
+  // Settings
+  disposable = vscode.commands.registerCommand(
+    `typatone.settings`,
+    async () => {
+      const options = await vscode.window.showQuickPick(
+        [
+          {
+            label: 'Tempo mode',
+            detail: 'The melody is played on a tempo',
+            picked: Rhythm.isSync(),
+          },
+
+          {
+            label: 'Loop',
+            description: 'max: 3',
+            detail: 'Loop the sequence in tempo mode',
+            picked: Rhythm.isLooping(),
+          },
+        ],
+        {
+          placeHolder: 'Typatone options',
+          canPickMany: true,
+        }
+      )
+
+      if (options) {
+        Rhythm.setLoop(Boolean(options.find((o) => o.label === 'Loop')))
+        Rhythm.setSync(Boolean(options.find((o) => o.label === 'Sync mode')))
+
+        Rhythm.stop()
+        Sound.stop()
+      }
+    }
+  )
+  context.subscriptions.push(disposable)
+
+  Rhythm.init(context)
+  Sound.init(context)
 }
 
 // this method is called when your extension is deactivated
