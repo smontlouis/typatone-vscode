@@ -6,7 +6,7 @@ A Visual Studio Code extension that creates sweet melodies based on what you typ
 
 Run `code --install-extension smo.typatone-vscode`
 
-or search [typatone-vscode](https://marketplace.visualstudio.com/items?itemName=typatone) in Extensions Marketplace.
+or search [typatone-vscode](https://marketplace.visualstudio.com/items?itemName=smo.typatone-vscode) in Extensions Marketplace.
 
 ## How to use
 
