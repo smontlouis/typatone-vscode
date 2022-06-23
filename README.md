@@ -28,6 +28,9 @@ It's also possible to customize typatone-vscode experience in `Typatone: Setting
 - Tempo mode: by default, typatone-vscode uses a predefined tempo for each theme, it is possible to deactivate the tempo and code in free mode
 - Loop: loop the sequence in tempo mode (max: 3 times)
 
+## Issues
+Tested only on OSX, feel free to contribute.
+
 ---
 
 **Enjoy!**
